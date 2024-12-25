@@ -1,55 +1,11 @@
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
+import sqlite3
 
 root = Tk()
 
-
-class Aplicativo():
-    def __init__(self):
-        self.root = root
-        self.tela()
-        self.mostrar_aviso()
-        self.parte_tela()
-        self.botoes_tela()
-        self.itens_tela()
-        self.entrada_tela()
-        self.resultados_tela()
-        root.mainloop()
-
-    def tela(self):
-        self.root.title('Calculadora Custo Concreto')
-        self.root.configure(background='#DCDCDC')
-        self.root.geometry('1000x600')
-        self.root.resizable(False, False)
-
-    def parte_tela(self):
-        # Parte 1 - Frame principal
-        self.parte_1 = Frame(self.root, bd=4, bg='white')
-
-        self.parte_1.place(relx=0.01, rely=0.01, relwidth=0.98, relheight=0.7)
-
-        # Parte 2 - Frame inferior (onde ficam os botões e o total)
-        self.parte_2 = Frame(self.root, bd=4, bg='white')
-
-        self.parte_2.place(relx=0.01, rely=0.72, relwidth=0.98, relheight=0.14)
-
-    def mostrar_aviso(self):
-        # Exibindo o aviso de boas-vindas
-        messagebox.showinfo("Seja Bem-Vindo!", "Direitos Reservados: Miguel Ruiz")
-
-    def botoes_tela(self):
-        # Botão para "Calcular"
-        self.bt_calcular = Button(self.parte_2, text='Calcular', bd=2, font=('verdana', 9, 'bold'), command=self.calcular)
-        self.bt_calcular.place(relx=0.009, rely=0.27, relwidth=0.15, relheight=0.4)
-
-        # Botão para "Apagar Tudo"
-        self.bt_apagar = Button(self.parte_2, text='Apagar Tudo', font=('verdana', 9, 'bold'), command=self.limpar_campos)
-        self.bt_apagar.place(relx=0.18, rely=0.27, relwidth=0.15, relheight=0.4)
-
-        # Botão para "Buscar"
-        self.bt_buscar = Button(self.parte_1, text='Buscar', font=('verdana', 9, 'bold'), command=self.limpar_campos)
-        self.bt_buscar.place(relx=0.91, rely=0.01, relwidth=0.06, relheight=0.06)
+class Funcs ():
 
     def calcular(self):
         # Lógica de cálculo para o total
@@ -87,7 +43,6 @@ class Aplicativo():
             self.resultado_total.config(text=f'Total: R${custo_total:.2f}')
         except ValueError:
             messagebox.showerror("Erro", "Por favor, insira informações válidas.")
-
     def limpar_campos(self):
         # Limpa todos os campos de entrada e o resultado
         self.preco_cimento.delete(0, END)
@@ -105,10 +60,67 @@ class Aplicativo():
         self.quantidade_brita1.delete(0, END)
         self.quantidade_aditivo1.delete(0, END)
         self.quantidade_aditivo2.delete(0, END)
+    def conectar_banco(self):
+        self.con = sqlite3.connect("itens.banco")
+        self.cursor = self.con.cursor(); print("Conectando ao banco de dados")
+    def desconectar_banco(self):
+        self.con.close(); print("Desconectando do banco de dados")
+    def montartabela(self):
+        self.conectar_banco();
+        # Criando tabela
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS itens (
+                cod INTEGER PRIMARY KEY,
+                nome_itens CHAR(40) NOT NULL,
+                valor INTEGER(20)                
+            );
+        """)
+        self.con.commit(); print("Banco de dados criado")
+        self.desconectar_banco()
 
-        # Resetando o resultado
-        self.resultado_total.config(text='Total: R$0.00')
 
+class Aplicativo(Funcs):
+    def __init__(self):
+        self.root = root
+        self.tela()
+        self.mostrar_aviso()
+        self.parte_tela()
+        self.botoes_tela()
+        self.itens_tela()
+        self.entrada_tela()
+        self.resultados_tela()
+        self.montartabela()
+        root.mainloop()
+    def tela(self):
+        self.root.title('Calculadora Custo Concreto')
+        self.root.configure(background='#DCDCDC')
+        self.root.geometry('1000x600')
+        self.root.resizable(False, False)
+    def parte_tela(self):
+        # Parte 1 - Frame principal
+        self.parte_1 = Frame(self.root, bd=4, bg='white')
+
+        self.parte_1.place(relx=0.01, rely=0.01, relwidth=0.98, relheight=0.7)
+
+        # Parte 2 - Frame inferior (onde ficam os botões e o total)
+        self.parte_2 = Frame(self.root, bd=4, bg='white')
+
+        self.parte_2.place(relx=0.01, rely=0.72, relwidth=0.98, relheight=0.14)
+    def mostrar_aviso(self):
+        # Exibindo o aviso de boas-vindas
+        messagebox.showinfo("Seja Bem-Vindo!", "Direitos Reservados: Miguel Ruiz")
+    def botoes_tela(self):
+        # Botão para "Calcular"
+        self.bt_calcular = Button(self.parte_2, text='Calcular', bd=2, font=('verdana', 9, 'bold'), command=self.calcular)
+        self.bt_calcular.place(relx=0.009, rely=0.27, relwidth=0.15, relheight=0.4)
+
+        # Botão para "Apagar Tudo"
+        self.bt_apagar = Button(self.parte_2, text='Apagar Tudo', font=('verdana', 9, 'bold'), command=self.limpar_campos)
+        self.bt_apagar.place(relx=0.18, rely=0.27, relwidth=0.15, relheight=0.4)
+
+        # Botão para "Buscar"
+        self.bt_buscar = Button(self.parte_1, text='Buscar', font=('verdana', 9, 'bold'), command=self.limpar_campos)
+        self.bt_buscar.place(relx=0.91, rely=0.01, relwidth=0.06, relheight=0.06)
     def itens_tela(self):
         # Labels para os itens
 
@@ -161,7 +173,6 @@ class Aplicativo():
         self.scroolLista = Scrollbar(self.parte_1, orient= 'vertical')
         self.lista_itens.configure(yscroll =self.scroolLista.set)
         self.scroolLista.place(relx = 0.97, rely = 0.1, relwidth=0.02, relheight = 0.5)
-
     def entrada_tela(self):
         # Entradas para os campos de preço de cada item (KG/M³)
         self.preco_cimento = Entry(self.parte_1, bg='#D6DEE2')
@@ -211,13 +222,9 @@ class Aplicativo():
 
         self.nomeitem = Entry(self.parte_1, bg='#D6DEE2')
         self.nomeitem.place(relx=0.52, rely=0.012, relwidth=0.37, relheight=0.06)
-
-
     def resultados_tela(self):
         # Label para mostrar o total calculado
         self.resultado_total = Label(self.parte_2, text='Total: R$0.00', bg='white')
         self.resultado_total.place(relx=0.34, rely=0.27, relwidth=0.1, relheight=0.4)
-
-
 
 Aplicativo()
