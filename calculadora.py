@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import messagebox
+from tkinter import ttk
 
 root = Tk()
 
@@ -8,9 +9,9 @@ class Aplicativo():
     def __init__(self):
         self.root = root
         self.tela()
+        self.mostrar_aviso()
         self.parte_tela()
         self.botoes_tela()
-        self.mostrar_aviso()
         self.itens_tela()
         self.entrada_tela()
         self.resultados_tela()
@@ -39,17 +40,16 @@ class Aplicativo():
 
     def botoes_tela(self):
         # Botão para "Calcular"
-        self.bt_calcular = Button(self.parte_2, text='Calcular', command=self.calcular)
+        self.bt_calcular = Button(self.parte_2, text='Calcular', bd=2, font=('verdana', 9, 'bold'), command=self.calcular)
         self.bt_calcular.place(relx=0.009, rely=0.27, relwidth=0.15, relheight=0.4)
 
         # Botão para "Apagar Tudo"
-        self.bt_apagar = Button(self.parte_2, text='Apagar Tudo', command=self.limpar_campos)
+        self.bt_apagar = Button(self.parte_2, text='Apagar Tudo', font=('verdana', 9, 'bold'), command=self.limpar_campos)
         self.bt_apagar.place(relx=0.18, rely=0.27, relwidth=0.15, relheight=0.4)
 
         # Botão para "Buscar"
-        self.bt_buscar = Button(self.parte_1, text='Buscar', command=self.limpar_campos)
-        self.bt_buscar.place(relx=0.9, rely=0.01, relwidth=0.05, relheight=0.06)
-
+        self.bt_buscar = Button(self.parte_1, text='Buscar', font=('verdana', 9, 'bold'), command=self.limpar_campos)
+        self.bt_buscar.place(relx=0.91, rely=0.01, relwidth=0.06, relheight=0.06)
 
     def calcular(self):
         # Lógica de cálculo para o total
@@ -113,14 +113,14 @@ class Aplicativo():
         # Labels para os itens
 
         self.aviso_virgula = Label(self.parte_1, text = '⚠️ AVISO IMPORTANTE: USE PONTO NO LUGAR DA VÍRGULA EM CASAS DECIMAIS!',
-                                   bg= 'white', fg = '#000000' )
-        self.aviso_virgula.place(relx=0.01, rely=0.8, relwidth=0.5, relheight=0.2)
+                                   bg= 'white', fg = '#000000', font=('verdana', 8, 'bold'))
+        self.aviso_virgula.place(relx=0.009, rely=0.8, relwidth=0.55, relheight=0.2)
 
-        self.quantidade = Label(self.parte_1, text='KG/M³:', bg='white')
-        self.quantidade.place(relx=0.025, rely=0.001, relwidth=0.2, relheight=0.03)
+        self.quantidade = Label(self.parte_1, text='KG/M³:', bg='white', font=('verdana', 9, 'bold'))
+        self.quantidade.place(relx=0.08, rely=0.0005, relwidth=0.09, relheight=0.05)
 
-        self.preco_coluna = Label(self.parte_1, text='Preço em KG/M³:', bg='white')
-        self.preco_coluna.place(relx=0.14, rely=0.00001, relwidth=0.2, relheight=0.03)
+        self.preco_coluna = Label(self.parte_1, text='Preço em KG/M³:', bg='white', font=('verdana', 9, 'bold'))
+        self.preco_coluna.place(relx=0.15, rely=0.001, relwidth=0.19, relheight=0.03)
 
         # Labels de materiais
         self.cimento = Label(self.parte_1, text='Cimento:', bg='white')
@@ -143,6 +143,24 @@ class Aplicativo():
 
         self.aditivo2 = Label(self.parte_1, text='Aditivo 2:', bg='white')
         self.aditivo2.place(relx=0.01, rely=0.6, relwidth=0.1, relheight=0.08)
+
+        #Outros Labels
+
+        self.lista_itens = ttk.Treeview(self.parte_1, columns=('col0', 'col1'))
+
+        self.lista_itens.heading('#0', text='Cód:')
+        self.lista_itens.heading('#1', text='Traço:')
+        self.lista_itens.heading('#2', text='Valor:')
+
+        self.lista_itens.column('#0', width=1)
+        self.lista_itens.column('#1', width=270)
+        self.lista_itens.column('#2', width=5)
+
+        self.lista_itens.place(relx=0.52, rely=0.1, relwidth=0.45, relheight=0.5)
+
+        self.scroolLista = Scrollbar(self.parte_1, orient= 'vertical')
+        self.lista_itens.configure(yscroll =self.scroolLista.set)
+        self.scroolLista.place(relx = 0.97, rely = 0.1, relwidth=0.02, relheight = 0.5)
 
     def entrada_tela(self):
         # Entradas para os campos de preço de cada item (KG/M³)
@@ -191,8 +209,8 @@ class Aplicativo():
 
         #Outras Entradas:
 
-        self.nometraço = Entry(self.parte_1, bg='#D6DEE2')
-        self.nometraço.place(relx=0.59, rely=0.012, relwidth=0.30, relheight=0.06)
+        self.nomeitem = Entry(self.parte_1, bg='#D6DEE2')
+        self.nomeitem.place(relx=0.52, rely=0.012, relwidth=0.37, relheight=0.06)
 
 
     def resultados_tela(self):
